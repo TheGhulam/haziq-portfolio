@@ -28,6 +28,23 @@ import site from "../data/site.json";
 	</div>
 </nav>
 
+<script>
+	import { gsap } from "gsap";
+
+	document.addEventListener("astro:page-load", () => {
+		const nav = document.querySelector("nav");
+		const logo = document.getElementById("logo");
+		const socials = document.querySelectorAll("#social a");
+
+		gsap.fromTo(logo, { opacity: 0, y: -12 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" });
+		gsap.fromTo(
+			socials,
+			{ opacity: 0, y: -8 },
+			{ opacity: 1, y: 0, duration: 0.4, stagger: 0.04, ease: "power2.out", delay: 0.15 }
+		);
+	});
+</script>
+
 <style>
 	nav {
 		mix-blend-mode: difference;

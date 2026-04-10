@@ -66,6 +66,32 @@
 	background: white;
 }
 
+/* Accent variable */
+:root {
+	--accent: #00F5D4;
+}
+
+/* Card hover utility */
+.card-hover {
+	transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.card-hover:hover {
+	box-shadow: 0 8px 32px rgba(0, 245, 212, 0.12);
+	transform: translateY(-2px);
+}
+
+/* Portfolio image zoom */
+.portfolio-img-wrap {
+	overflow: hidden;
+	border-radius: 0.75rem;
+}
+.portfolio-img-wrap img {
+	transition: transform 0.35s ease;
+}
+.portfolio-img-wrap:hover img {
+	transform: scale(1.05);
+}
+
 /* Other classes */
 
 .select-none {

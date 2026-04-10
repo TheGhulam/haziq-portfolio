@@ -68,22 +68,22 @@ let experience = [
 			<div
 				x-show="aboutOpen"
 				x-transition:enter="transition ease-out duration-300"
-				x-transition:enter-start="-translate-y-full"
-				x-transition:enter-end="translate-y-0"
-				x-transition:leave="transition ease-in duration-300"
-				x-transition:leave-start="translate-y-0"
-				x-transition:leave-end="-translate-y-full"
+				x-transition:enter-start="-translate-y-full opacity-0"
+				x-transition:enter-end="translate-y-0 opacity-100"
+				x-transition:leave="transition ease-in duration-200"
+				x-transition:leave-start="translate-y-0 opacity-100"
+				x-transition:leave-end="-translate-y-full opacity-0"
 				class="flex flex-col gap-32 pt-32 pb-40 fixed inset-0 min-h-screen bg-secondary-50 text-gray-900 overflow-auto">
 				<section class="pt-8">
 					<Container>
-						<div class="flex flex-col self-stretch justify-center">
-							<h2 class="text-3xl font-bold pb-8">Haziq Nadeem</h2>
-							<p>
+						<div class="flex flex-col self-stretch justify-center about-hero-item">
+							<h2 class="text-3xl font-bold pb-4">Haziq Nadeem</h2>
+							<p class="text-lg leading-relaxed text-gray-700">
 								Economics student at Bilkent University with a focus on Econometrics, Macro-Finance, and Empirical Research.
 								Experienced in financial sector internships at Bank Alfalah and HBL, and academic research estimating agricultural
 								production functions for Pakistan. Passionate about teaching and quantitative methods.
 							</p>
-							<div class="flex pt-8 gap-8">
+							<div class="flex pt-8 gap-6">
 								{
 									site.socials.map((social) => (
 										<a
@@ -92,8 +92,9 @@ let experience = [
 											aria-label="Social"
 											href={social.link}
 											target="_blank"
-											rel="noopener noreferrer">
-											<Icon class="w-6 h-6" name={social.icon} />
+											rel="noopener noreferrer"
+											class="text-gray-600 hover:text-gray-900 transition-colors duration-200">
+											<Icon class="w-5 h-5" name={social.icon} />
 										</a>
 									))
 								}
@@ -105,30 +106,40 @@ let experience = [
 				<section>
 					<Container class="flex flex-col gap-16 justify-between">
 						<div class="flex flex-col">
-							<h2 class="font-bold mb-6">Experience</h2>
-							<div class="grid lg:grid-cols-2 gap-16">
+							<p class="text-xs uppercase tracking-widest text-gray-400 mb-2">Work</p>
+							<h2 class="text-2xl font-bold mb-8">Experience</h2>
+							<div class="grid lg:grid-cols-2 gap-6">
 								{
 									experience.map((e) => (
-										<div>
-											<h3 class="text-xl font-semibold">{e.title}</h3>
-											<h5 class="font-semibold">{e.company}</h5>
-											<h4 class="font-normal text-sm">{e.date}</h4>
-											<p class="pt-4">{e.description}</p>
+										<div class="experience-item card-hover border border-gray-200 rounded-xl p-6 border-l-4" style="border-left-color: #00F5D4;">
+											<div class="flex flex-wrap items-center gap-3 mb-3">
+												<h3 class="text-lg font-semibold">{e.title}</h3>
+												{e.date && (
+													<span class="text-xs bg-gray-100 rounded-full px-3 py-1 text-gray-500 whitespace-nowrap">{e.date}</span>
+												)}
+											</div>
+											<h5 class="font-semibold text-sm text-gray-600 mb-3">{e.company}</h5>
+											{e.description && <p class="text-sm leading-relaxed text-gray-600">{e.description}</p>}
 										</div>
 									))
 								}
 							</div>
 						</div>
 						<div class="flex flex-col">
-							<h2 class="font-bold mb-6">Education</h2>
-							<div class="grid lg:grid-cols-2 gap-16">
+							<p class="text-xs uppercase tracking-widest text-gray-400 mb-2">Academic</p>
+							<h2 class="text-2xl font-bold mb-8">Education</h2>
+							<div class="grid lg:grid-cols-2 gap-6">
 								{
 									educations.map((e) => (
-										<div>
-											<h3 class="text-xl font-semibold">{e.title}</h3>
-											<h5 class="font-semibold">{e.school}</h5>
-											<h4 class="font-normal text-sm">{e.date}</h4>
-											<p class="pt-4">{e.description}</p>
+										<div class="education-item card-hover border border-gray-200 rounded-xl p-6 border-l-4" style="border-left-color: #00F5D4;">
+											<div class="flex flex-wrap items-center gap-3 mb-3">
+												<h3 class="text-lg font-semibold">{e.title}</h3>
+												{e.date && (
+													<span class="text-xs bg-gray-100 rounded-full px-3 py-1 text-gray-500 whitespace-nowrap">{e.date}</span>
+												)}
+											</div>
+											<h5 class="font-semibold text-sm text-gray-600 mb-3">{e.school}</h5>
+											{e.description && <p class="text-sm leading-relaxed text-gray-600">{e.description}</p>}
 										</div>
 									))
 								}
@@ -141,7 +152,7 @@ let experience = [
 
 		<div
 			x-show="!portfolioOpen"
-			@click="aboutOpen = !aboutOpen"
+			@click="aboutOpen = !aboutOpen; if (aboutOpen) { $nextTick(() => window.animateAboutIn && window.animateAboutIn()) }"
 			class="p-4 select-none text-center cursor-pointer cursor-target"
 			data-cursor-hover
 			data-cursor-parallax>
@@ -153,6 +164,20 @@ let experience = [
 		</div>
 	</div>
 </div>
+
+<script>
+	import { gsap } from "gsap";
+
+	document.addEventListener("astro:page-load", () => {
+		window.animateAboutIn = () => {
+			gsap.fromTo(
+				".about-hero-item, .experience-item, .education-item",
+				{ opacity: 0, y: 24 },
+				{ opacity: 1, y: 0, duration: 0.35, stagger: 0.07, ease: "power2.out", clearProps: "all" }
+			);
+		};
+	});
+</script>
 
 <style>
 	.about {

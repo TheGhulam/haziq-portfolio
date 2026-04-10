@@ -8,7 +8,7 @@
 	document.addEventListener("astro:page-load", () => {
 		var mouse = { x: 0, y: 0 };
 		var pos = { x: 0, y: 0 };
-		var ratio = 0.65;
+		var ratio = 0.18;
 		var active = false;
 		let activeCount = 0;
 		var ball = document.getElementById("ball");
@@ -58,7 +58,7 @@
 				if ($titleEl) {
 					gsap.to(ball, {
 						duration: 0.3,
-						scale: 1.4,
+						scale: 1.2,
 						backgroundColor: "rgba(255,255,255,0.2)",
 					});
 
@@ -184,8 +184,8 @@
 
 	#ball {
 		position: fixed;
-		width: 80px;
-		height: 80px;
+		width: 60px;
+		height: 60px;
 		background: white;
 		border-radius: 50%;
 		pointer-events: none;
@@ -214,7 +214,7 @@
 		line-height: 16px;
 		text-align: center;
 		position: absolute;
-		left: 32px;
+		left: 22px;
 		top: -42px;
 		color: #999;
 		opacity: 0;
@@ -232,8 +232,8 @@
 		line-height: 16px;
 		text-align: center;
 		position: absolute;
-		left: 32px;
-		top: 100px;
+		left: 22px;
+		top: 80px;
 		color: #999;
 		opacity: 0;
 		transform: translateY(20px);
