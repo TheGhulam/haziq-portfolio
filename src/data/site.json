@@ -1,0 +1,15 @@
+{
+	"url": "https://haziqnadeem.com",
+	"socials": [
+		{
+			"name": "LinkedIn",
+			"link": "https://www.linkedin.com/in/haziq-nadeem",
+			"icon": "mdi:linkedin"
+		},
+		{
+			"name": "Email",
+			"link": "mailto:haziqsehgal9@gmail.com",
+			"icon": "mdi:email"
+		}
+	]
+}

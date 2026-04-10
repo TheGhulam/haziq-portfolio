@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: http://flexfolio.zank.studio/sitemap-index.xml

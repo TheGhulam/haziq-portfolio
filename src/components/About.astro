@@ -1,0 +1,163 @@
+---
+import Container from "./Container.astro";
+import { Icon } from "astro-icon";
+import site from "../data/site.json";
+
+let educations = [
+	{
+		title: "Bachelor's in Economics",
+		school: "Bilkent University",
+		date: "September 2022 – May 2026",
+		description: "Focusing on Econometrics, Macro-Finance, and Empirical Research.",
+	},
+	{
+		title: "Bachelor's in Applied Economics (Exchange)",
+		school: "University of Mannheim",
+		date: "August 2025 – January 2026",
+		description: "Exchange semester studying Applied Economics.",
+	},
+	{
+		title: "A' Levels",
+		school: "Sceptre College",
+		date: "August 2019 – May 2021",
+		description: "",
+	},
+	{
+		title: "O' Levels",
+		school: "Aisha Bawany Academy",
+		date: "",
+		description: "",
+	},
+];
+
+let experience = [
+	{
+		title: "Research Assistant",
+		company: "Bilkent University",
+		date: "June 2025 – Present",
+		description:
+			"Estimating aggregate agricultural production functions for Pakistan using national-level time-series data (1961–2022) on cereal production, land, labor, capital, and chemical inputs.",
+	},
+	{
+		title: "Teaching Assistant",
+		company: "Bilkent University",
+		date: "January 2025 – June 2025",
+		description:
+			"TA for Intermediate Macroeconomics (ECON 205). Held weekly discussion sections, office hours, and graded assessments and exams.",
+	},
+	{
+		title: "ALM, F/X Trading & Overseas Treasuries Intern",
+		company: "Bank Alfalah Limited",
+		date: "June 2024 – August 2024",
+		description: "Internship in the treasury division covering Asset-Liability Management, foreign exchange trading, and overseas treasury operations.",
+	},
+	{
+		title: "Innovation and Financial Inclusion",
+		company: "HBL – Habib Bank Limited",
+		date: "August 2023 – July 2024",
+		description: "Worked in the Innovation and Financial Inclusion division, contributing to initiatives expanding access to financial services.",
+	},
+];
+---
+
+<div @keydown.escape="aboutOpen=false" class="about fixed left-1/2 -translate-x-1/2 z-20" transition:animate="initial">
+	<div class="flex items-center justify-center px-10 py-4 w-full">
+		<!-- Left Content -->
+
+		<template x-teleport="body">
+			<div
+				x-show="aboutOpen"
+				x-transition:enter="transition ease-out duration-300"
+				x-transition:enter-start="-translate-y-full"
+				x-transition:enter-end="translate-y-0"
+				x-transition:leave="transition ease-in duration-300"
+				x-transition:leave-start="translate-y-0"
+				x-transition:leave-end="-translate-y-full"
+				class="flex flex-col gap-32 pt-32 pb-40 fixed inset-0 min-h-screen bg-secondary-50 text-gray-900 overflow-auto">
+				<section class="pt-8">
+					<Container>
+						<div class="flex flex-col self-stretch justify-center">
+							<h2 class="text-3xl font-bold pb-8">Haziq Nadeem</h2>
+							<p>
+								Economics student at Bilkent University with a focus on Econometrics, Macro-Finance, and Empirical Research.
+								Experienced in financial sector internships at Bank Alfalah and HBL, and academic research estimating agricultural
+								production functions for Pakistan. Passionate about teaching and quantitative methods.
+							</p>
+							<div class="flex pt-8 gap-8">
+								{
+									site.socials.map((social) => (
+										<a
+											data-cursor-hover
+											data-hover-title
+											aria-label="Social"
+											href={social.link}
+											target="_blank"
+											rel="noopener noreferrer">
+											<Icon class="w-6 h-6" name={social.icon} />
+										</a>
+									))
+								}
+							</div>
+						</div>
+					</Container>
+				</section>
+
+				<section>
+					<Container class="flex flex-col gap-16 justify-between">
+						<div class="flex flex-col">
+							<h2 class="font-bold mb-6">Experience</h2>
+							<div class="grid lg:grid-cols-2 gap-16">
+								{
+									experience.map((e) => (
+										<div>
+											<h3 class="text-xl font-semibold">{e.title}</h3>
+											<h5 class="font-semibold">{e.company}</h5>
+											<h4 class="font-normal text-sm">{e.date}</h4>
+											<p class="pt-4">{e.description}</p>
+										</div>
+									))
+								}
+							</div>
+						</div>
+						<div class="flex flex-col">
+							<h2 class="font-bold mb-6">Education</h2>
+							<div class="grid lg:grid-cols-2 gap-16">
+								{
+									educations.map((e) => (
+										<div>
+											<h3 class="text-xl font-semibold">{e.title}</h3>
+											<h5 class="font-semibold">{e.school}</h5>
+											<h4 class="font-normal text-sm">{e.date}</h4>
+											<p class="pt-4">{e.description}</p>
+										</div>
+									))
+								}
+							</div>
+						</div>
+					</Container>
+				</section>
+			</div>
+		</template>
+
+		<div
+			x-show="!portfolioOpen"
+			@click="aboutOpen = !aboutOpen"
+			class="p-4 select-none text-center cursor-pointer cursor-target"
+			data-cursor-hover
+			data-cursor-parallax>
+			<span
+				class="cursor-target-text block break-keep whitespace-nowrap"
+				data-cursor-parallax-elelement
+				x-text="aboutOpen ? 'Close' : 'About Me'">
+			</span>
+		</div>
+	</div>
+</div>
+
+<style>
+	.about {
+		mix-blend-mode: difference;
+		position: fixed;
+		top: 0;
+	}
+</style>
