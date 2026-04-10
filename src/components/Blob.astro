@@ -65,13 +65,13 @@
 		}
 
 		createLight(0xffffff, 0.6, 0, 1, 0); // Hemisphere light
-		createLight(0x590d82, 0.5, 200, 300, 400);
-		createLight(0x590d82, 0.5, -200, 300, 400);
+		createLight(0x0d5e82, 0.5, 200, 300, 400);
+		createLight(0x0d8265, 0.5, -200, 300, 400);
 
-		var light = new THREE.HemisphereLight(0xffffff, 0x0c056d, 0.6);
+		var light = new THREE.HemisphereLight(0xffffff, 0x050d6d, 0.6);
 		scene.add(light);
 
-		var light = new THREE.DirectionalLight(0x590d82, 0.5);
+		var light = new THREE.DirectionalLight(0x0d5e82, 0.5);
 		light.position.set(200, 300, 400);
 		scene.add(light);
 		var light2 = light.clone();
@@ -88,7 +88,7 @@
 		}
 
 		var material = new THREE.MeshLambertMaterial({
-			emissive: 0xca46cc,
+			emissive: 0x2a8fcc,
 			opacity: 0.8,
 			emissiveIntensity: 0.6,
 		});
