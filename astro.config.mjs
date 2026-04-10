@@ -2,6 +2,7 @@ import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import alpinejs from "@astrojs/alpinejs";
 import AstroPWA from "@vite-pwa/astro";
+import icon from "astro-icon";
 
 // https://astro.build/config
 export default defineConfig({
@@ -53,5 +54,6 @@ export default defineConfig({
 			},
 		}),
 		alpinejs(),
+		icon({ include: { mdi: ["linkedin", "email"] } }),
 	],
 });

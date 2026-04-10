@@ -1,6 +1,9 @@
-import { z, defineCollection } from "astro:content";
+import { defineCollection } from "astro:content";
+import { glob } from "astro/loaders";
+import { z } from "astro/zod";
 
 const portfolioCollection = defineCollection({
+	loader: glob({ pattern: "**/*.md", base: "./src/content/portfolio" }),
 	schema: z.object({
 		title: z.string(),
 		image: z.object({
@@ -14,7 +17,7 @@ const portfolioCollection = defineCollection({
 				src: z.string(),
 			}),
 		),
-		publishDate: z.string().transform((str) => new Date(str)),
+		publishDate: z.coerce.date(),
 	}),
 });
 

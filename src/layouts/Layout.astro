@@ -3,7 +3,7 @@ import { SEO } from "astro-seo";
 import Top from "@components/About.astro";
 import { pwaInfo } from "virtual:pwa-info";
 import "@fontsource-variable/inter";
-import { ViewTransitions } from "astro:transitions";
+import { ClientRouter } from "astro:transitions";
 import CustomCursor from "@components/CustomCursor.astro";
 import Bottom from "@components/Portfolio.astro";
 import Navbar from "@components/Navbar.astro";
@@ -52,7 +52,7 @@ const makeTitle = title ? title + " | " + "Haziq Nadeem" : "Haziq Nadeem – Eco
 			}}
 		/>
 
-		<ViewTransitions />
+		<ClientRouter />
 
 		{pwaInfo && <Fragment set:html={pwaInfo.webManifest.linkTag} />}
 		<script src="/src/pwa.ts"></script>
