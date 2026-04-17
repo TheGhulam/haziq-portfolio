@@ -1,152 +1,235 @@
 ---
-// https://codepen.io/Sidechain_Studio/pen/VxdgMX?editors=1010
-// alt: https://codepen.io/zank/pen/OJrpyJZ?editors=0010
 ---
 
 <div class="content w-full">
 	<canvas class="scene scene--full" id="scene"></canvas>
 	<div class="content__inner">
-		<img height="200" width="600" class="lg:max-w-lg opacity-70" src="/images/hero-text.png" alt="Disappear Here" />
+		<img
+			height="200"
+			width="600"
+			class="lg:max-w-lg"
+			src="/images/hero-text.png"
+			alt="Haziq Nadeem"
+			style="filter: hue-rotate(80deg) saturate(2) brightness(0.6);"
+		/>
 	</div>
 </div>
 
-<script is:inline src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/708453/perlin.js"></script>
-
 <script>
-	import * as THREE from "three";
-	import { gsap, Power1 } from "gsap";
-
-	// Throttle function
-	function throttle(func, limit) {
-		let inThrottle;
-		return function () {
-			if (!inThrottle) {
-				func.apply(this, arguments);
-				inThrottle = true;
-				setTimeout(() => (inThrottle = false), limit);
-			}
-		};
-	}
-
-	// Debounce function
-	function debounce(func, wait) {
-		let timeout;
-		return function (...args) {
-			clearTimeout(timeout);
-			timeout = setTimeout(() => func.apply(this, args), wait);
-		};
-	}
-
 	document.addEventListener("astro:page-load", () => {
-		var canvas = document.querySelector("#scene");
+		const canvas = document.querySelector<HTMLCanvasElement>("#scene");
+		if (!canvas) return;
+		const ctx = canvas.getContext("2d")!;
 
-		var width = canvas.offsetWidth,
-			height = canvas.offsetHeight;
+		const COLORS = ["#00F5D4", "#3533cd", "#111111"];
+		const TYPES = ["circle", "square", "triangle"] as const;
+		const COUNT = 10;
+		const REPEL_RADIUS = 130;
+		const REPEL_FORCE = 4.5;
+		const SPEED_MIN = 0.6;
+		const SPEED_MAX = 1.8;
 
-		var renderer = new THREE.WebGLRenderer({
-			canvas: canvas,
-			antialias: false,
-			alpha: true,
-		});
+		type ShapeType = (typeof TYPES)[number];
 
-		renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1);
-		renderer.setSize(width, height);
-		renderer.setClearColor(0x000000, 0);
-
-		var scene = new THREE.Scene();
-
-		var camera = new THREE.PerspectiveCamera(100, width / height, 0.1, 1000);
-		camera.position.set(60, 0, 220);
-
-		function createLight(color, intensity, x, y, z) {
-			const light = new THREE.DirectionalLight(color, intensity);
-			light.position.set(x, y, z);
-			scene.add(light);
+		interface Shape {
+			x: number;
+			y: number;
+			vx: number;
+			vy: number;
+			angle: number;
+			spin: number;
+			size: number;
+			type: ShapeType;
+			color: string;
+			alpha: number;
 		}
 
-		createLight(0xffffff, 0.6, 0, 1, 0); // Hemisphere light
-		createLight(0x0d5e82, 0.5, 200, 300, 400);
-		createLight(0x0d8265, 0.5, -200, 300, 400);
+		let W = 0, H = 0;
+		const mouse = { x: -9999, y: -9999 };
+		let shapes: Shape[] = [];
+		let rafId: number;
 
-		var light = new THREE.HemisphereLight(0xffffff, 0x050d6d, 0.6);
-		scene.add(light);
-
-		var light = new THREE.DirectionalLight(0x0d5e82, 0.5);
-		light.position.set(200, 300, 400);
-		scene.add(light);
-		var light2 = light.clone();
-		light2.position.set(-200, 300, 400);
-		scene.add(light2);
-
-		var geometry = new THREE.IcosahedronGeometry(120, 20);
-		var positions = geometry.attributes.position.array;
-		var originalPositions = [];
-
-		for (var i = 0; i < positions.length; i += 3) {
-			var vertex = new THREE.Vector3(positions[i], positions[i + 1], positions[i + 2]);
-			originalPositions.push(vertex.clone());
+		function rand(min: number, max: number) {
+			return Math.random() * (max - min) + min;
 		}
 
-		var material = new THREE.MeshLambertMaterial({
-			emissive: 0x2a8fcc,
-			opacity: 0.8,
-			emissiveIntensity: 0.6,
-		});
-		var shape = new THREE.Mesh(geometry, material);
-		scene.add(shape);
+		function makeShape(w: number, h: number): Shape {
+			const size = rand(60, 130);
+			const speed = rand(SPEED_MIN, SPEED_MAX);
+			const angle2d = rand(0, Math.PI * 2);
+			return {
+				x: rand(size, w - size),
+				y: rand(size, h - size),
+				vx: Math.cos(angle2d) * speed,
+				vy: Math.sin(angle2d) * speed,
+				angle: rand(0, Math.PI * 2),
+				spin: rand(-0.018, 0.018),
+				size,
+				type: TYPES[Math.floor(Math.random() * TYPES.length)],
+				color: COLORS[Math.floor(Math.random() * COLORS.length)],
+				alpha: rand(0.45, 0.85),
+			};
+		}
 
-		function updateVertices(a) {
-			for (var i = 0, j = 0; i < positions.length; i += 3, j++) {
-				var vector = originalPositions[j].clone();
-				var perlin = noise.simplex3(vector.x * 0.002 + a * 0.0004, vector.y * 0.006 + a * 0.0004, vector.z * 0.006);
-				var ratio = perlin * 0.4 * (mouse.y + 0.1) + 0.8;
-				vector.multiplyScalar(ratio);
+		function resize() {
+			W = canvas.offsetWidth;
+			H = canvas.offsetHeight;
+			canvas.width = W * devicePixelRatio;
+			canvas.height = H * devicePixelRatio;
+			ctx.scale(devicePixelRatio, devicePixelRatio);
+		}
 
-				positions[i] = vector.x;
-				positions[i + 1] = vector.y;
-				positions[i + 2] = vector.z;
+		function init() {
+			resize();
+			shapes = Array.from({ length: COUNT }, () => makeShape(W, H));
+		}
+
+		function drawCircle(s: Shape) {
+			ctx.beginPath();
+			ctx.arc(0, 0, s.size / 2, 0, Math.PI * 2);
+			ctx.stroke();
+		}
+
+		function drawSquare(s: Shape) {
+			const h = s.size / 2;
+			ctx.beginPath();
+			ctx.rect(-h, -h, s.size, s.size);
+			ctx.stroke();
+		}
+
+		function drawTriangle(s: Shape) {
+			const r = s.size / 2;
+			ctx.beginPath();
+			ctx.moveTo(0, -r);
+			ctx.lineTo(r * 0.866, r * 0.5);
+			ctx.lineTo(-r * 0.866, r * 0.5);
+			ctx.closePath();
+			ctx.stroke();
+		}
+
+		function draw(s: Shape) {
+			ctx.save();
+			ctx.translate(s.x, s.y);
+			ctx.rotate(s.angle);
+			ctx.globalAlpha = s.alpha;
+			ctx.strokeStyle = s.color;
+			ctx.lineWidth = 2;
+			if (s.type === "circle") drawCircle(s);
+			else if (s.type === "square") drawSquare(s);
+			else drawTriangle(s);
+			ctx.restore();
+		}
+
+		function update() {
+			for (let i = 0; i < shapes.length; i++) {
+				const s = shapes[i];
+
+				// Mouse repulsion
+				const dx = s.x - mouse.x;
+				const dy = s.y - mouse.y;
+				const dist = Math.sqrt(dx * dx + dy * dy);
+				if (dist < REPEL_RADIUS && dist > 0) {
+					const force = (REPEL_RADIUS - dist) / REPEL_RADIUS * REPEL_FORCE;
+					s.vx += (dx / dist) * force;
+					s.vy += (dy / dist) * force;
+				}
+
+				// Speed cap
+				const speed = Math.sqrt(s.vx * s.vx + s.vy * s.vy);
+				if (speed > 6) {
+					s.vx = (s.vx / speed) * 6;
+					s.vy = (s.vy / speed) * 6;
+				}
+
+				// Gentle return to natural speed
+				if (speed > SPEED_MAX) {
+					s.vx *= 0.985;
+					s.vy *= 0.985;
+				}
+
+				s.x += s.vx;
+				s.y += s.vy;
+				s.angle += s.spin;
+
+				const r = s.size / 2;
+				if (s.x - r < 0) { s.x = r; s.vx = Math.abs(s.vx); }
+				if (s.x + r > W) { s.x = W - r; s.vx = -Math.abs(s.vx); }
+				if (s.y - r < 0) { s.y = r; s.vy = Math.abs(s.vy); }
+				if (s.y + r > H) { s.y = H - r; s.vy = -Math.abs(s.vy); }
+
+				// Shape-to-shape collision (circle approximation)
+				for (let j = i + 1; j < shapes.length; j++) {
+					const b = shapes[j];
+					const cdx = b.x - s.x;
+					const cdy = b.y - s.y;
+					const minDist = (s.size + b.size) / 2;
+					const d = Math.sqrt(cdx * cdx + cdy * cdy);
+					if (d < minDist && d > 0) {
+						const nx = cdx / d;
+						const ny = cdy / d;
+						const relV = (s.vx - b.vx) * nx + (s.vy - b.vy) * ny;
+						if (relV > 0) {
+							s.vx -= relV * nx;
+							s.vy -= relV * ny;
+							b.vx += relV * nx;
+							b.vy += relV * ny;
+						}
+						// Separate overlapping shapes
+						const overlap = minDist - d;
+						s.x -= nx * overlap * 0.5;
+						s.y -= ny * overlap * 0.5;
+						b.x += nx * overlap * 0.5;
+						b.y += ny * overlap * 0.5;
+					}
+				}
 			}
-			geometry.attributes.position.needsUpdate = true;
 		}
 
-		function render(a) {
-			requestAnimationFrame(render);
-			updateVertices(a);
-			renderer.render(scene, camera);
+		function loop() {
+			ctx.clearRect(0, 0, W, H);
+			update();
+			shapes.forEach(draw);
+			rafId = requestAnimationFrame(loop);
+		}
+
+		function onMouseMove(e: MouseEvent) {
+			const rect = canvas.getBoundingClientRect();
+			mouse.x = e.clientX - rect.left;
+			mouse.y = e.clientY - rect.top;
 		}
 
 		function onResize() {
-			canvas.style.width = "";
-			canvas.style.height = "";
-			width = canvas.offsetWidth;
-			height = canvas.offsetHeight;
-			camera.aspect = width / height;
-			camera.updateProjectionMatrix();
-			renderer.setSize(width, height);
+			cancelAnimationFrame(rafId);
+			// Save current velocities/types, re-init positions for new size
+			const prev = shapes.map(s => ({ type: s.type, color: s.color, size: s.size, vx: s.vx, vy: s.vy, spin: s.spin }));
+			resize();
+			shapes = prev.map(p => ({
+				...makeShape(W, H),
+				type: p.type,
+				color: p.color,
+				size: p.size,
+				vx: p.vx,
+				vy: p.vy,
+				spin: p.spin,
+			}));
+			rafId = requestAnimationFrame(loop);
 		}
 
-		var mouse = new THREE.Vector2(0.8, 0.5);
-
-		const onMouseMove = throttle(function (e) {
-			gsap.to(mouse, {
-				y: e.clientY / height,
-				x: e.clientX / width,
-				ease: Power1.easeOut,
-				duration: 1,
-			});
-		}, 200);
-
-		requestAnimationFrame(render);
+		init();
+		rafId = requestAnimationFrame(loop);
 		window.addEventListener("mousemove", onMouseMove);
+		window.addEventListener("resize", onResize);
 
-		const debouncedResize = debounce(onResize, 200);
-		window.addEventListener("resize", debouncedResize);
+		// Cleanup on page transitions
+		document.addEventListener("astro:before-swap", () => {
+			cancelAnimationFrame(rafId);
+			window.removeEventListener("mousemove", onMouseMove);
+			window.removeEventListener("resize", onResize);
+		}, { once: true });
 	});
 </script>
 
 <style>
-	/* Base */
-
 	.content {
 		position: relative;
 		display: grid;
@@ -157,7 +240,6 @@
 		min-height: 100vh;
 	}
 
-	/* Canvas positions */
 	.content__inner {
 		grid-area: 1 / 1 / 1 / 1;
 		position: relative;

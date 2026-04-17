@@ -1,0 +1,116 @@
+<canvas id="cartesian-bg"></canvas>
+
+<script>
+	document.addEventListener("astro:page-load", () => {
+		const canvas = document.getElementById("cartesian-bg") as HTMLCanvasElement;
+		if (!canvas) return;
+		const ctx = canvas.getContext("2d")!;
+
+		const CELL = 24;
+		const MAJOR_EVERY = 5;
+		const GRID_COLOR = "#3d3d3d";
+		const MAJOR_COLOR = "#5a5a5a";
+		const AXIS_COLOR = "#00F5D4";
+		const AXIS_ALPHA = 0.6;
+
+		let W = 0, H = 0;
+		let rafId: number;
+
+		function resize() {
+			W = window.innerWidth;
+			H = window.innerHeight;
+			canvas.width = W;
+			canvas.height = H;
+			draw();
+		}
+
+		function draw() {
+			ctx.clearRect(0, 0, W, H);
+
+			// Centre the grid so (0,0) is in the middle
+			const originX = Math.round(W / 2);
+			const originY = Math.round(H / 2);
+
+			// Minor + major grid lines
+			for (let x = originX % CELL; x < W; x += CELL) {
+				const col = Math.round((x - originX) / CELL);
+				const isMajor = col % MAJOR_EVERY === 0;
+				ctx.strokeStyle = isMajor ? MAJOR_COLOR : GRID_COLOR;
+				ctx.lineWidth = isMajor ? 1.2 : 0.7;
+				ctx.beginPath();
+				ctx.moveTo(x, 0);
+				ctx.lineTo(x, H);
+				ctx.stroke();
+			}
+
+			for (let y = originY % CELL; y < H; y += CELL) {
+				const row = Math.round((y - originY) / CELL);
+				const isMajor = row % MAJOR_EVERY === 0;
+				ctx.strokeStyle = isMajor ? MAJOR_COLOR : GRID_COLOR;
+				ctx.lineWidth = isMajor ? 1.2 : 0.7;
+				ctx.beginPath();
+				ctx.moveTo(0, y);
+				ctx.lineTo(W, y);
+				ctx.stroke();
+			}
+
+			// Axes
+			ctx.strokeStyle = AXIS_COLOR;
+			ctx.globalAlpha = AXIS_ALPHA;
+			ctx.lineWidth = 1.5;
+
+			ctx.beginPath();
+			ctx.moveTo(originX, 0);
+			ctx.lineTo(originX, H);
+			ctx.stroke();
+
+			ctx.beginPath();
+			ctx.moveTo(0, originY);
+			ctx.lineTo(W, originY);
+			ctx.stroke();
+
+			// Arrowheads
+			const aw = 5, ah = 9;
+			ctx.fillStyle = AXIS_COLOR;
+
+			ctx.beginPath();
+			ctx.moveTo(originX, 10);
+			ctx.lineTo(originX - aw, 10 + ah);
+			ctx.lineTo(originX + aw, 10 + ah);
+			ctx.closePath();
+			ctx.fill();
+
+			ctx.beginPath();
+			ctx.moveTo(W - 10, originY);
+			ctx.lineTo(W - 10 - ah, originY - aw);
+			ctx.lineTo(W - 10 - ah, originY + aw);
+			ctx.closePath();
+			ctx.fill();
+
+			ctx.globalAlpha = 1;
+		}
+
+		function init() {
+			resize();
+		}
+
+		window.addEventListener("resize", resize);
+
+		document.addEventListener("astro:before-swap", () => {
+			window.removeEventListener("resize", resize);
+		}, { once: true });
+
+		init();
+	});
+</script>
+
+<style>
+	canvas {
+		position: fixed;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 0;
+		pointer-events: none;
+	}
+</style>
