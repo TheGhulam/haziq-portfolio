@@ -97,9 +97,9 @@
 		}
 
 		function drawSquare(s: Shape) {
-			const h = s.size / 2;
+			const h = s.size / (2 * Math.SQRT2);
 			ctx.beginPath();
-			ctx.rect(-h, -h, s.size, s.size);
+			ctx.rect(-h, -h, h * 2, h * 2);
 			ctx.stroke();
 		}
 
