@@ -73,7 +73,7 @@ const portfolioEntries = await getCollection("portfolio");
 		<div
 			x-show="!aboutOpen"
 			@click="portfolioOpen = !portfolioOpen; if (portfolioOpen) { $nextTick(() => window.animatePortfolioIn && window.animatePortfolioIn()) }"
-			class="p-4 select-none cursor-pointer cursor-target text-center"
+			class="p-4 select-none cursor-pointer cursor-target text-center text-gray-900 hover:text-gray-600 transition-colors text-2xl font-semibold tracking-wide"
 			data-cursor-hover
 			data-cursor-parallax>
 			<span class="cursor-target-text block break-keep" data-cursor-parallax-elelement x-text="portfolioOpen ? 'Close' : 'Portfolio'"></span>
@@ -98,7 +98,6 @@ const portfolioEntries = await getCollection("portfolio");
 
 <style>
 	.portfolio {
-		mix-blend-mode: difference;
 		position: fixed;
 		bottom: 0;
 	}

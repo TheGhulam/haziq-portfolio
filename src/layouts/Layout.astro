@@ -57,7 +57,7 @@ const makeTitle = title ? title + " | " + "Haziq Nadeem" : "Haziq Nadeem – Eco
 		{pwaInfo && <Fragment set:html={pwaInfo.webManifest.linkTag} />}
 		<script src="/src/pwa.ts"></script>
 	</head>
-	<body x-data="{ portfolioOpen: false, aboutOpen: false  }" class:list={["bg-black text-white h-screen", bodyClass]}>
+	<body x-data="{ portfolioOpen: false, aboutOpen: false  }" class:list={["bg-white text-gray-900 h-screen", bodyClass]}>
 		<Navbar />
 		<Top />
 		<CustomCursor />

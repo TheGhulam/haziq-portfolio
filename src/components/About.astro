@@ -150,7 +150,7 @@ let experience = [
 		<div
 			x-show="!portfolioOpen"
 			@click="aboutOpen = !aboutOpen; if (aboutOpen) { $nextTick(() => window.animateAboutIn && window.animateAboutIn()) }"
-			class="p-4 select-none text-center cursor-pointer cursor-target"
+			class="p-4 select-none text-center cursor-pointer cursor-target text-gray-900 hover:text-gray-600 transition-colors text-2xl font-semibold tracking-wide"
 			data-cursor-hover
 			data-cursor-parallax>
 			<span
@@ -178,7 +178,6 @@ let experience = [
 
 <style>
 	.about {
-		mix-blend-mode: difference;
 		position: fixed;
 		top: 0;
 	}

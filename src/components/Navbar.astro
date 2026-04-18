@@ -12,15 +12,26 @@ import site from "../data/site.json";
 			class="block"
 			href="/"
 			@click="if (portfolioOpen) { portfolioOpen = false } else if (aboutOpen) { aboutOpen = false }">
-			<img height="45" width="45" class="w-10" src="/logo.svg" alt="Logo" />
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88 40" class="h-9 w-auto" aria-hidden="true">
+				<!-- radical tick: small descender, then up-stroke, then overline over HOME -->
+				<polyline
+					points="2,28 8,36 16,4 86,4"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2.2"
+					stroke-linejoin="round"
+					stroke-linecap="round"
+				/>
+				<text x="18" y="30" font-family="Inter, sans-serif" font-size="20" fill="currentColor" letter-spacing="1">HOME</text>
+			</svg>
 		</a>
 	</div>
 	<div id="social" x-show="!portfolioOpen && !aboutOpen">
 		<div class="flex flex-col md:flex-row gap-6">
 			{
 				site.socials.map((social) => (
-					<a data-cursor-hover data-hover-title aria-label="Social" href={social.link} target="_blank" rel="noopener noreferrer">
-						<Icon class="w-4 h-4" name={social.icon} />
+					<a data-cursor-hover data-hover-title aria-label="Social" href={social.link} target="_blank" rel="noopener noreferrer" class="text-gray-700 hover:text-gray-900 transition-colors">
+						<Icon class="w-9 h-9" name={social.icon} />
 					</a>
 				))
 			}
@@ -46,7 +57,4 @@ import site from "../data/site.json";
 </script>
 
 <style>
-	nav {
-		mix-blend-mode: difference;
-	}
 </style>
